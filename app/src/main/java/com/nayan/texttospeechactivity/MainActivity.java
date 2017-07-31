@@ -1,5 +1,6 @@
 package com.nayan.texttospeechactivity;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
@@ -18,18 +19,22 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements
-        TextToSpeech.OnInitListener{
-    /** Called when the activity is first created. */
-
+        TextToSpeech.OnInitListener {
+    /**
+     * Called when the activity is first created.
+     */
+    private String si;
     private TextView txtSpeechInput;
     private ImageButton btnSpeak;
     private final int REQ_CODE_SPEECH_INPUT = 100;
+    // For Speak Out
     private TextToSpeech tts;
     private Button btnSpeakOut;
     private EditText txtText;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -43,9 +48,10 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 promptSpeechInput();
+
             }
         });
-
+//For Speak Out
         tts = new TextToSpeech(this, this);
 
         btnSpeakOut = (Button) findViewById(R.id.btnSpeakOut);
@@ -58,15 +64,17 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View arg0) {
                 speakOut();
+
             }
 
         });
+
 
     }
 
     /**
      * Showing google speech input dialog
-     * */
+     */
     private void promptSpeechInput() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -85,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements
 
     /**
      * Receiving speech input
-     * */
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -97,6 +105,15 @@ public class MainActivity extends AppCompatActivity implements
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     txtSpeechInput.setText(result.get(0));
+                    si = txtSpeechInput.getText().toString();
+                    if (si == null) {
+                        return;
+                    }
+                    else if (si.equals("hello")) {
+                        Dialog dialog=new Dialog(this);
+                        dialog.setContentView(R.layout.main);
+                        dialog.show();
+                    }
                 }
                 break;
             }
