@@ -17,12 +17,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        TextToSpeech.OnInitListener{
     /** Called when the activity is first created. */
 
     private TextView txtSpeechInput;
     private ImageButton btnSpeak;
     private final int REQ_CODE_SPEECH_INPUT = 100;
+    private TextToSpeech tts;
+    private Button btnSpeakOut;
+    private EditText txtText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 promptSpeechInput();
             }
+        });
+
+        tts = new TextToSpeech(this, this);
+
+        btnSpeakOut = (Button) findViewById(R.id.btnSpeakOut);
+
+        txtText = (EditText) findViewById(R.id.txtText);
+
+        // button on click event
+        btnSpeakOut.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                speakOut();
+            }
+
         });
 
     }
@@ -82,5 +102,48 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        // Don't forget to shutdown!
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onInit(int status) {
+        // TODO Auto-generated method stub
+
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = tts.setLanguage(Locale.US);
+
+            // tts.setPitch(5); // set pitch level
+
+            // tts.setSpeechRate(2); // set speech speed rate
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language is not supported");
+            } else {
+                btnSpeak.setEnabled(true);
+                speakOut();
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed");
+        }
+
+    }
+
+    private void speakOut() {
+
+        String text = txtText.getText().toString();
+
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
     }
 }
