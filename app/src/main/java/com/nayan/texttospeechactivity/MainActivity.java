@@ -105,9 +105,10 @@ public class MainActivity extends AppCompatActivity implements
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     txtSpeechInput.setText(result.get(0));
-                    si = txtSpeechInput.getText().toString();
-                    if (si == null) {
-                        return;
+//                    si = txtSpeechInput.getText().toString();
+                    si = result.get(0);
+                    if (si.equals("home")) {
+                        txtSpeechInput.setText("call"+si+"method");
                     }
                     else if (si.equals("hello")) {
                         Dialog dialog=new Dialog(this);
